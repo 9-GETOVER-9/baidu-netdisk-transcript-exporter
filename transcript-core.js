@@ -204,4 +204,3 @@
 
   return { normalizeText, parseVideoLocation, sanitizeSegment, makeDownloadPath, createStabilityTracker, assessTranscript, formatExport, runExport };
 });
-
