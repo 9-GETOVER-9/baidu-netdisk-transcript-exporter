@@ -1,0 +1,12 @@
+*.zip
+*.log
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+.DS_Store
+Thumbs.db
+Data/
+文稿导出/
+.cache/

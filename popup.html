@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>文稿整理 · 设置</title>
+  <link rel="stylesheet" href="popup.css">
+  <script src="popup.js" defer></script>
+</head>
+<body>
+  <main>
+    <header class="heading">
+      <span class="book-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <div><h1>文稿整理</h1><p>文稿优先 · 无文稿尝试字幕 · 结束下载 ZIP。</p></div>
+    </header>
+    <div class="status" id="status" role="status" aria-live="polite">正在读取设置…</div>
+    <section class="settings" aria-label="功能设置">
+      <label class="setting-row" for="enableToggle">
+        <span><strong>启用文稿导出</strong><small>允许目录面板启动新任务<br>关闭后当前任务继续收尾</small></span>
+        <input class="switch" type="checkbox" id="enableToggle" disabled>
+      </label>
+      <label class="setting-row" for="batchToggle">
+        <span><strong>目录批量面板</strong><small>在网盘目录页显示任务和进度</small></span>
+        <input class="switch" type="checkbox" id="batchToggle" disabled>
+      </label>
+      <label class="setting-row" for="pdfToggle">
+        <span><strong>文档下载区</strong><small>按类型选择 PDF 等课程资料</small></span>
+        <input class="switch" type="checkbox" id="pdfToggle" disabled>
+      </label>
+    </section>
+    <form id="folderForm" class="folder-card" novalidate>
+      <label for="outputSubfolder">保存子文件夹</label>
+      <div class="input-row">
+        <input id="outputSubfolder" type="text" placeholder="文稿导出" autocomplete="off" spellcheck="false" aria-describedby="folderHelp folderMessage" disabled>
+        <button id="saveFolder" type="submit" disabled>保存</button>
+      </div>
+      <p id="folderHelp">位于浏览器默认下载目录内。可用“课程/文稿”分层；留空表示直接保存到默认下载目录。</p>
+      <p id="folderMessage" class="field-message" role="status" aria-live="polite"></p>
+    </form>
+    <details class="guide" open>
+      <summary>第一次使用</summary>
+      <ol>
+        <li>在浏览器下载设置中，把默认下载位置设为希望保存文稿的本地文件夹。</li>
+        <li>刷新已打开的网盘目录页，点击右上角面板中的“扫描目录”。</li>
+        <li>确认视频清单后开始导出。首次建议用少量视频、低并发测试。</li>
+        <li>查看“已取得文字”：网页文稿与字幕补提分别计数。“待处理的问题”只列失败和跳过，展开可查完整路径。</li>
+        <li>结束后按网盘目录打包 Markdown ZIP。已取得文字仍需核验完整性；“文稿未检出”不代表字幕也没有取得。</li>
+      </ol>
+    </details>
+    <div class="notice"><span aria-hidden="true">i</span><p>设置自动保存。安装或更新扩展后，请刷新网盘目录页。重新开启导出后，在目录面板继续任务。</p></div>
+  </main>
+  <footer><span>保留目录 · 清楚记录</span><span id="version"></span></footer>
+</body>
+</html>
