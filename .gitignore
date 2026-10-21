@@ -10,3 +10,7 @@ Thumbs.db
 Data/
 文稿导出/
 .cache/
+dist/
+output/
+test-results/
+playwright-report/

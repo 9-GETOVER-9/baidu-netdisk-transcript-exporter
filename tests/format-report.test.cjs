@@ -45,7 +45,7 @@ test('newer unknown observation overrides old cache and untrusted suffixes are e
   assert.equal(html.includes('<img onerror='),false);
   assert.equal((html.match(/<\/script>/g)||[]).length,1);
 });
-test('export page shows the same format sample before saving its single ZIP',async()=>{
+test('export page shows the same format sample before saving its single ZIP',{timeout:15000},async()=>{
   const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
   const markup=fs.readFileSync(path.join(__dirname,'../export.html'),'utf8');
   assert.ok(markup.includes('id="formatRows"'));
@@ -56,11 +56,10 @@ test('export page shows the same format sample before saving its single ZIP',asy
   const nodes=new Map([...markup.matchAll(/id="([^"]+)"/g)].map(m=>[m[1],element()]));
   const a=video('1','一.MOV','not_detected'),b=video('2','二.mp4','present');
   const snapshot={queue:{rootDir:root,batchId:'batch',videos:[a,b]},scanStats:{failedDirs:[]}};
-  let complete,downloadCount=0;const saved=new Promise(resolve=>complete=resolve);
-  const context=vm.createContext({URL,document:{getElementById:id=>nodes.get(id),createElement:element},location:{href:'chrome-extension://id/export.html?'+new URLSearchParams({root,batch:'batch'})},chrome:{storage:{local:{async get(key){return key==='outputSubfolder'?{}:{[key]:snapshot};}}}},PDFormatStats:require('../format-stats.js'),PDArchive:require('../archive-core.js'),PDArchiveStore:{async list(){return [record(a,'subtitle'),record(b,'manuscript')];}},PDArchiveDownload:{async save(_chrome,_bytes,filename){downloadCount++;complete();return {filename};}}});
-  vm.runInContext(fs.readFileSync(path.join(__dirname,'../export.js'),'utf8'),context);
-  await Promise.race([saved,new Promise((_,reject)=>setTimeout(()=>reject(Error('export did not finish: '+nodes.get('status').textContent)),1000))]);
-  await new Promise(resolve=>setImmediate(resolve));
+  let downloadCount=0;
+  const context=vm.createContext({URL,document:{getElementById:id=>nodes.get(id),createElement:element},location:{href:'chrome-extension://id/export.html?'+new URLSearchParams({root,batch:'batch'})},chrome:{storage:{local:{async get(key){return key==='outputSubfolder'?{}:{[key]:snapshot};}}}},PDFormatStats:require('../format-stats.js'),PDArchive:require('../archive-core.js'),PDArchiveStore:{async list(){return [record(a,'subtitle'),record(b,'manuscript')];}},PDArchiveDownload:{async save(_chrome,_bytes,filename){downloadCount++;return {filename};}}});
+  // export.js ends in generate(): await the real operation instead of a 1-second CPU race.
+  await vm.runInContext(fs.readFileSync(path.join(__dirname,'../export.js'),'utf8'),context);
   const displayed=nodes.get('formatRows').children.map(tr=>tr.children.map(td=>td.textContent));
   assert.deepEqual(displayed,[['MP4','1','1','0','0','100.0%'],['MOV','1','0','1','0','0.0%']]);
   const results=nodes.get('resultRows').children.map(tr=>tr.children.map(td=>td.textContent));

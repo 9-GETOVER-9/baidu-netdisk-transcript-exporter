@@ -1,0 +1,32 @@
+{
+  "name": "baidu-netdisk-transcript-exporter",
+  "version": "4.2.3",
+  "description": "Baidu Netdisk transcript/subtitle Markdown archive extension",
+  "scripts": {
+    "test": "node scripts/run-unit.cjs",
+    "check": "node scripts/check.cjs",
+    "test:browser": "playwright test",
+    "package": "node scripts/python.cjs scripts/package.py",
+    "verify:package": "node scripts/python.cjs scripts/package.py --verify",
+    "test:package": "node scripts/python.cjs scripts/test_package.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/9-GETOVER-9/baidu-netdisk-transcript-exporter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/9-GETOVER-9/baidu-netdisk-transcript-exporter/issues"
+  },
+  "homepage": "https://github.com/9-GETOVER-9/baidu-netdisk-transcript-exporter#readme",
+  "devDependencies": {
+    "@playwright/test": "1.64.1"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  }
+}
