@@ -1049,4 +1049,3 @@
   setTimeout(init,1000);
   window.addEventListener('hashchange',()=>updatePanel());
 })();
-
