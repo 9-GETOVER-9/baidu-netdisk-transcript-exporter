@@ -1,12 +1,12 @@
 # 百度网盘文稿与字幕批量导出
 
-Chrome / Edge 扩展，Manifest V3，当前版本 **4.2.2**。
+Chrome / Edge 扩展，Manifest V3，当前版本 **4.2.3**。
 
 递归扫描选中目录，优先读取视频网页文稿；没有可读文稿时尝试播放器字幕。按原网盘目录生成 Markdown，整批完成后统一保存 ZIP，并附可搜索的离线报告和未取得清单。MP4、MOV 等采用同一提取流程，不按 MOV 后缀跳过。
 
 ## 安装与使用
 
-1. 下载仓库 ZIP 并解压至固定位置。
+1. 从 [Releases](https://github.com/9-GETOVER-9/baidu-netdisk-transcript-exporter/releases/latest) 下载插件安装 ZIP 并解压至固定位置。
 2. 打开 `chrome://extensions/` 或 `edge://extensions/`，开启开发者模式。
 3. 点击“加载已解压的扩展程序”，选择直接包含 `manifest.json` 的目录。
 4. 登录百度网盘网页版，进入需要处理的目录，刷新页面。
@@ -34,16 +34,28 @@ Chrome / Edge 扩展，Manifest V3，当前版本 **4.2.2**。
 
 ## 开发与验证
 
-无npm依赖。测试要求 Node.js 20+ 与 PATH 中的 Python 3（标准库校验ZIP）。也可用环境变量 `PYTHON` 指定解释器。
+插件安装不需要 npm。下面的开发命令在克隆的源码仓库执行，安装 ZIP 不含测试和工具链。开发使用 Node 22/24、Python 3.12；Playwright 仅为开发依赖，已锁定版本。
 
 ```sh
-node --test tests/*.cjs
+npm ci --ignore-scripts
+npm run check
+npm test
+npm run test:package
+npx playwright install chromium
+npm run test:browser
+npm run package
+npm run verify:package
 ```
 
-153项离线测试覆盖文稿/字幕回退、队列恢复、任务身份、持久缓存、ZIP与统计。离线测试通过不等于已在所有账号和网页版本实测；安装后请自行小批量验证。
+CI 覆盖 Windows/Linux × Node 22/24，并在 Chromium 中从实际 ZIP 加载扩展，使用合成网盘响应验证缓存和单个 ZIP 下载。真实 Chrome 扩展 API 与 DOM 参与测试；没有访问实际百度账号，不等于在线兼容认证。
+
+- [安装、升级与排错](docs/INSTALL.md)
+- [开发、回归测试与发布](docs/DEVELOPMENT.md)
+- [贡献指南](CONTRIBUTING.md) · [安全报告](SECURITY.md) · [隐私与缓存](PRIVACY.md)
+- [版本记录](CHANGELOG.md) · [上游授权核查](docs/LICENSING.md)
 
 ## 上游与授权说明
 
 本项目基于 [moshuxv/pandownload](https://github.com/moshuxv/pandownload) 的本地改进版本，保留上游来源归属。新增字幕补提、MD ZIP归档、恢复及重试、任务核验和统计界面。
 
-截至2026-10-20检查，上游仓库未声明许可证。本仓库不以MIT等许可证重新授权上游代码；上游部分权利归其原作者。需要再分发或商用时，应先确认相应授权。项目与百度网盘官方无隶属关系。
+截至2026-10-21核查当前文件、全部25个公开提交、README、Issue/PR、Release及标签，未发现上游许可证或明确衍生分发授权，授权仍待确认。本仓库不以MIT等许可证重新授权上游代码；上游部分权利归其原作者。需要再分发或商用时，应先确认相应授权。项目与百度网盘官方无隶属关系。
