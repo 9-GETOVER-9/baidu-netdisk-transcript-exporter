@@ -39,7 +39,30 @@
         request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(Error('无法读取文稿缓存'));
       });
     }
-    return {put,list,get};
+    async function metadata(){
+      const db=await open();
+      return new Promise((resolve,reject)=>{
+        const tx=db.transaction('transcripts','readonly'),rows=[],encoder=new TextEncoder();
+        const request=tx.objectStore('transcripts').openCursor();
+        request.onsuccess=()=>{
+          const cursor=request.result;if(!cursor)return;
+          const r=cursor.value;
+          rows.push({key:r.key,rootDir:r.rootDir,taskId:r.taskId,sourcePath:r.sourcePath,capturedAt:r.capturedAt,batchId:r.batchId,attempt:r.attempt,bytes:encoder.encode(JSON.stringify(r)).byteLength});
+          cursor.continue();
+        };
+        tx.oncomplete=()=>resolve(rows);tx.onerror=tx.onabort=()=>reject(Error('无法统计文字缓存，请重试'));
+      });
+    }
+    async function removeKeys(keys){
+      if(!Array.isArray(keys)||keys.some(k=>typeof k!=='string'||!k))throw Error('无效缓存键');
+      const db=await open();
+      return new Promise((resolve,reject)=>{
+        const tx=db.transaction('transcripts','readwrite'),store=tx.objectStore('transcripts');
+        for(const key of keys)store.delete(key);
+        tx.oncomplete=()=>resolve();tx.onerror=tx.onabort=()=>reject(Error('缓存清理未完成，请重新打开缓存管理页重试'));
+      });
+    }
+    return {put,list,get,metadata,removeKeys};
   }
   return {createStore};
 });

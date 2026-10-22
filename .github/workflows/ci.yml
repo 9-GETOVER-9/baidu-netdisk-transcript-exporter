@@ -33,7 +33,7 @@ jobs:
       - run: npm run verify:package
   browser:
     name: Installed Chromium regression
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -45,7 +45,10 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci --ignore-scripts
-      - run: npx playwright install --with-deps chromium
+      # GitHub's Ubuntu image already has Chrome's runtime libraries. Avoid the
+      # unrelated apt font/upgrades download; actual browser launch still gates CI.
+      - run: npx playwright install chromium
+        timeout-minutes: 5
       - run: npm run test:browser
       - uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         if: always()

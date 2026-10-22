@@ -17,11 +17,14 @@ npm run verify:package
 
 Linux 首次浏览器安装可用 `npx playwright install --with-deps chromium`。无 npm 运行依赖，Playwright 仅是开发依赖并锁定版本。没有测试账号或环境密钥要求。
 
+GitHub 浏览器作业固定使用 Ubuntu 24.04 托管镜像的现有 Chrome 运行库，只下载 Playwright 指定的 Chromium，避免 apt 字体/系统升级镜像缓慢阻塞；浏览器下载有 5 分钟上限，实际启动和全部回归仍是发布必需检查。自托管或精简 Linux 环境仍按上面的 `--with-deps` 安装依赖。
+
 ## 验证层次
 
 - Node 测试：纯逻辑及 DOM/Chrome/网络替身，覆盖异常、超时、身份隔离、缓存和归档等；不能证明网页实时兼容。
 - Playwright：从**实际安装 ZIP**解压加载真实 Chromium 扩展，使用真实 Service Worker、消息、存储、DOM 和下载 API。本机 HTTPS 服务器提供虚构网盘目录/视频/字幕响应；浏览器代理只隧道连接本机夹具，其余目标全部拒绝，包括扩展创建标签页的首次导航及后台字幕请求。测试弹窗设置、手动视频不被操作、慢文稿/预览标记、MOV 字幕、标签关闭失败、恢复和一个 ZIP 的实际内容。不是线上百度服务测试。
 - 包验证：显式 allowlist、根 manifest、版本、引用、语法、CRC、逐文件内容、SHA-256；重复打包必须字节相同，混入额外文件必须失败。
+- 缓存管理：逻辑测试覆盖目录边界、来源权限、确认签名、忙碌保护和清理日志中断恢复。真实 Chromium 验证 IndexedDB UTF-8 大小估算、取消/确认、按子目录删除、邻近目录保留、已经下载的 ZIP/MD 字节不变、进度修正和重新提取。
 
 浏览器失败时查看 `output/playwright/report/index.html`，或 `npx playwright show-trace 路径/trace.zip`。CI 上传合成截图/trace，14 天自动过期。
 

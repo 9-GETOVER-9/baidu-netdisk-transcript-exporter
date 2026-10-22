@@ -150,6 +150,49 @@ test('directory → delayed manuscript + MOV subtitle → durable cache → one 
   await expect(report.locator('#rows')).toContainText(urls[names[1]]);
   await report.screenshot({path:test.info().outputPath('report.png'),fullPage:true});
 
+  // Keep independently downloaded artifacts and another course while clearing a subtree.
+  const mdId=await app.worker.evaluate(()=>chrome.downloads.download({url:'data:text/markdown;charset=utf-8,%23%20Previously%20exported',filename:'previously-exported.md',saveAs:false}));
+  await expect.poll(()=>app.worker.evaluate(async id=>(await chrome.downloads.search({id}))[0]?.state,mdId)).toBe('complete');
+  const mdPath=await app.worker.evaluate(async id=>(await chrome.downloads.search({id}))[0].filename,mdId);
+  const zipBefore=fs.readFileSync(downloads[0].filename),mdBefore=fs.readFileSync(mdPath);
+  await app.worker.evaluate(async()=>{
+    await PDArchiveStore.put({rootDir:'/其他课程',taskId:'other',sourcePath:'/其他课程/a.mp4',markdown:'# 保留课程\n中文😀',capturedAt:'test'});
+    await PDArchiveStore.put({rootDir:'/回归课程',taskId:'prefix-neighbor',sourcePath:'/回归课程/第一章加长/a.mp4',markdown:'# 相似前缀也要保留'});
+  });
+  const popup=await app.context.newPage();await popup.goto(`chrome-extension://${app.id}/popup.html`);
+  const cachePromise=app.context.waitForEvent('page');await popup.locator('#manageCache').click();
+  const cache=await cachePromise;await cache.waitForLoadState();
+  await expect(cache.locator('#count')).toHaveText('4');
+  await cache.locator('#root').selectOption(root);await cache.locator('#folder').selectOption(root+'/第一章');
+  await cache.locator('#preview').click();await expect(cache.locator('#status')).toContainText('关闭网盘');
+  expect(await cache.locator('#confirmDialog').evaluate(d=>d.open)).toBe(false);
+  await page.close();
+  for(const tab of app.context.pages())if(tab.url().startsWith(`chrome-extension://${app.id}/export.html`))await tab.close();
+  await cache.locator('#preview').click();await expect(cache.locator('#confirmDialog')).toBeVisible();
+  await expect(cache.locator('#confirmSize')).toContainText('2 份文字');
+  await cache.locator('#cancel').click();
+  expect((await app.worker.evaluate(()=>PDArchiveStore.list('/回归课程'))).length).toBe(3);
+  await cache.locator('#preview').click();await cache.locator('#confirm').click();
+  await expect(cache.locator('#status')).toContainText('已清理 2 份');
+  await expect(cache.locator('#count')).toHaveText('2');
+  expect(fs.readFileSync(downloads[0].filename).equals(zipBefore)).toBe(true);
+  expect(fs.readFileSync(mdPath).equals(mdBefore)).toBe(true);
+  const retained=await app.worker.evaluate(()=>PDArchiveStore.list('/回归课程'));
+  expect(retained.map(r=>r.taskId)).toEqual(['prefix-neighbor']);
+  expect((await app.worker.evaluate(()=>PDArchiveStore.list('/其他课程'))).length).toBe(1);
+  const checkpoint=await app.worker.evaluate(async()=> (await chrome.storage.local.get('pandownload.queue.v1.'+encodeURIComponent('/回归课程')))['pandownload.queue.v1.'+encodeURIComponent('/回归课程')]);
+  expect(checkpoint.queue.videos.filter(v=>v.status==='failed')).toHaveLength(3);
+  expect(checkpoint.queue.videos.slice(0,2).every(v=>v.archived===false)).toBe(true);
+  await cache.reload();await expect(cache.locator('#count')).toHaveText('2');
+  await cache.setViewportSize({width:420,height:900});
+  expect(await cache.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await cache.screenshot({path:test.info().outputPath('cache-manager.png'),fullPage:true});
+  const resumed=await app.context.newPage();await resumed.goto('https://pan.baidu.com/disk/main#/index?path='+encodeURIComponent(root));
+  await expect(resumed.locator('#__batch_retry_failed__')).toContainText('3');
+  await expect(resumed.locator('.pd-equation')).toContainText('0 已缓存');
+  await resumed.locator('#__batch_retry_failed__').click();
+  await expect.poll(async()=> (await app.worker.evaluate(()=>PDArchiveStore.list('/回归课程'))).some(r=>r.source==='manuscript'&&r.attempt===2),{timeout:90000}).toBe(true);
+
 });
 
 
@@ -157,4 +200,18 @@ test('the fixture proxy rejects every non-fixture Internet host', async ({app}) 
   const page=await app.context.newPage();
   await expect(page.goto('https://example.invalid/not-a-fixture')).rejects.toThrow();
   expect(app.network.blocked).toContain('example.invalid:443');
+});
+
+test('real IndexedDB metadata counts UTF-8 and persists exact-key deletions across reopen',async({app})=>{
+  const result=await app.worker.evaluate(async()=>{
+    const store=PDArchiveStorage.createStore({name:'isolated-cache-regression'});
+    const record={rootDir:'/中文',taskId:'1',markdown:'# 中文😀',sourcePath:'/中文/a.mov'};
+    await store.put(record);
+    const rows=await store.metadata();
+    const expected=new TextEncoder().encode(JSON.stringify({...record,key:JSON.stringify(['/中文','1'])})).length;
+    await store.removeKeys([rows[0].key]);
+    const reopened=PDArchiveStorage.createStore({name:'isolated-cache-regression'});
+    return {bytes:rows[0].bytes,expected,remaining:(await reopened.metadata()).length};
+  });
+  expect(result.bytes).toBe(result.expected);expect(result.remaining).toBe(0);
 });

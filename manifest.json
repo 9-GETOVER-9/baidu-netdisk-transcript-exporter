@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "百度网盘文稿导出 · 本地改进版",
-  "version": "4.2.3",
-  "version_name": "4.2.3",
+  "version": "4.2.4",
+  "version_name": "4.2.4",
   "minimum_chrome_version": "120",
   "description": "文稿优先、字幕补提；分别展示取得文字与文稿检测结果，按网盘目录生成 Markdown ZIP。",
   "permissions": [

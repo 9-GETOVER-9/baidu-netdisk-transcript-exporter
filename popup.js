@@ -13,6 +13,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const saved = {};
 
   document.getElementById('version').textContent = `v${chrome.runtime.getManifest().version}`;
+  document.getElementById('manageCache').addEventListener('click',async()=>{
+    try{await chrome.tabs.create({url:chrome.runtime.getURL('cache.html')});}
+    catch{status.textContent='无法打开缓存管理页，请重试。';status.dataset.state='error';}
+  });
 
   function updateStatus() {
     const ready = controls.enabled.checked && controls.batchEnabled.checked;

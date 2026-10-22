@@ -19,4 +19,12 @@
 - 每篇 TXT 仍弹窗：视频提取不会逐篇下载 TXT；检查是否启动了“文档下载”，或另有旧插件在运行。
 - 大批量中断：保留原扩展目录，重新打开目录恢复，优先重试失败/跳过；不要直接删除扩展数据。
 
-下载校验（PowerShell）：`Get-FileHash .\baidu-netdisk-transcript-exporter-v4.2.3.zip -Algorithm SHA256`，与附件 SHA256SUMS.txt 比较。Linux/macOS 使用 `sha256sum -c SHA256SUMS.txt`（macOS 可用 shasum）。
+## 查看和清理缓存
+
+插件图标 → 打开缓存管理 → 选择任务根目录 → 选择要清理的课程子目录 → 查看清理范围 → 确认清理缓存。对话框会列出完整路径、份数与大小估算；点“保留缓存”或 Esc 会取消。
+
+请先暂停提取，等待正在处理的任务收尾，并关闭网盘目录/视频页、ZIP 打包页；保留缓存管理页。仍有这些页面时按钮会给出原因，不会强制关闭页面或删除缓存。
+
+清理的是浏览器文字缓存，不是视频，也不是电脑里已下载的 ZIP/MD。需要再次提取时重新打开原课程目录，点击“重试失败”；相同任务的其他未清理文字仍可用于打包。清理中断时重新打开管理页以恢复；若仍失败，请保留扩展数据并报告错误。
+
+下载校验（PowerShell）：`Get-FileHash .\baidu-netdisk-transcript-exporter-v4.2.4.zip -Algorithm SHA256`，与附件 SHA256SUMS.txt 比较。Linux/macOS 使用 `sha256sum -c SHA256SUMS.txt`（macOS 可用 shasum）。
