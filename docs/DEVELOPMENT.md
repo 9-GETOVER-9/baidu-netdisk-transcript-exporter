@@ -17,6 +17,8 @@ npm run verify:package
 
 Linux 首次浏览器安装可用 `npx playwright install --with-deps chromium`。无 npm 运行依赖，Playwright 仅是开发依赖并锁定版本。没有测试账号或环境密钥要求。
 
+GitHub 浏览器作业固定使用 Ubuntu 24.04 托管镜像的现有 Chrome 运行库，只下载 Playwright 指定的 Chromium，避免 apt 字体/系统升级镜像缓慢阻塞；浏览器下载有 5 分钟上限，实际启动和全部回归仍是发布必需检查。自托管或精简 Linux 环境仍按上面的 `--with-deps` 安装依赖。
+
 ## 验证层次
 
 - Node 测试：纯逻辑及 DOM/Chrome/网络替身，覆盖异常、超时、身份隔离、缓存和归档等；不能证明网页实时兼容。
