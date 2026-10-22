@@ -34,6 +34,7 @@ button:focus-visible,input:focus-visible,summary:focus-visible { outline: 3px so
 .switch:checked { background: #68866d; border-color: #68866d; }
 .switch:checked::after { transform: translateX(14px); }
 .folder-card { margin-top: 10px; border: 1px solid var(--line); border-radius: 12px; background: #f7f8f2; padding: 13px; }
+#manageCache { margin-top: 9px; padding: 7px 12px; border: 1px solid #c9d2c2; border-radius: 7px; color: var(--sage); background: var(--paper); }
 .folder-card > label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
 .input-row { display: flex; gap: 7px; }
 .input-row input { width: 0; min-width: 0; flex: 1; border: 1px solid #c9d2c2; border-radius: 7px; padding: 7px 9px; background: var(--paper); color: var(--ink); }

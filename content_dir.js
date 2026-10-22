@@ -207,7 +207,7 @@
     // ===== 组装HTML =====
     let html = '';
     html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">`;
-    html += `<span style="font-weight:bold;font-size:15px;">📂 文字稿归档 · 4.2.3</span>`;
+    html += `<span style="font-weight:bold;font-size:15px;">📂 文字稿归档 · 4.2.4</span>`;
     html += `<button id="__batch_toggle_collapse__" style="
       background:rgba(255,255,255,0.15);color:#fff;border:none;padding:2px 8px;
       border-radius:4px;font-size:11px;cursor:pointer;
@@ -416,7 +416,7 @@
 
     if (queue && STATE.scanStats.totalDirs) html += `<section class="pd-archive"><button id="__batch_pack_archive__" ${packing || STATE.scanning || STATE.activeTabs.length ? 'disabled' : ''}>${packing ? '正在准备打包…' : '打包 ZIP · Markdown 与报告'}</button><p class="pd-muted">本轮结束会自动打包。暂停并等待当前任务收尾后，也可打包阶段成果；未处理项会列入报告。</p></section>`;
     html += `<p class="pd-muted">文字先缓存在浏览器，最后按网盘目录生成 MD 并保存 ZIP；不逐篇下载。暂停后已打开的任务会继续收尾。</p>`;
-    html += `<div class="pd-version">页面脚本 4.2.3 · 文稿优先 · 字幕补提 · 统一 ZIP</div>`;
+    html += `<div class="pd-version">页面脚本 4.2.4 · 文稿优先 · 字幕补提 · 统一 ZIP</div>`;
 
     panelInner.innerHTML = html;
     panelInner.scrollTop = previousScroll;

@@ -36,13 +36,13 @@
     panel.setAttribute('aria-label', '文稿整理状态');
     panel.style.cssText = 'position:fixed;top:16px;right:16px;z-index:2147483647;background:#faf9f4;color:#33443b;padding:18px 20px;border:1px solid #dce3da;border-radius:18px;font:13px/1.65 "Microsoft YaHei",sans-serif;box-shadow:0 10px 35px #233e2f18;max-width:360px;pointer-events:none;';
     heading = document.createElement('div');
-    heading.textContent = '文稿整理 · 4.2.3 · 仅 ZIP';
+    heading.textContent = '文稿整理 · 4.2.4 · 仅 ZIP';
     heading.style.cssText = 'font-size:15px;font-weight:600;margin-bottom:7px;';
     status = document.createElement('div');
     status.id = '__subtitle_status__';
     status.setAttribute('role', 'status');
     const note = document.createElement('div');
-    note.textContent = '页面脚本 4.2.3 · 中途仅缓存 · 结束统一打包 ZIP';
+    note.textContent = '页面脚本 4.2.4 · 中途仅缓存 · 结束统一打包 ZIP';
     note.style.cssText = 'font-size:11px;color:#69776c;margin-top:9px;';
     panel.append(heading, status, note);
     document.documentElement.appendChild(panel);
