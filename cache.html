@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>课程缓存 · 文稿整理</title>
+  <link rel="stylesheet" href="cache.css">
+  <script src="cache-management.js" defer></script><script src="cache.js" defer></script>
+</head>
+<body><main>
+  <header><span class="eyebrow">LOCAL LIBRARY</span><h1>课程缓存</h1><p>文字暂存在这个浏览器中，便于继续提取和重新打包。</p></header>
+  <section class="summary" aria-label="缓存总览"><div><strong id="count">—</strong><span>份文字</span></div><div><strong id="bytes">—</strong><span>缓存内容估算</span></div><button id="refresh">刷新统计</button></section>
+  <p class="muted">大小按文字及元数据的 UTF-8 字节数估算，不含浏览器数据库索引、进度记录等开销，不等于实际磁盘占用。文稿与字幕均计入。</p>
+  <p id="status" role="status" aria-live="polite">正在读取缓存…</p>
+  <section class="card">
+    <h2>按课程目录清理</h2>
+    <label for="root">任务根目录</label><select id="root" disabled></select>
+    <label for="folder">清理范围（包含所选目录下的全部子目录）</label><select id="folder" disabled></select>
+    <p id="selection" class="selection"></p>
+    <button id="preview" class="danger" disabled>查看清理范围…</button>
+  </section>
+  <aside><h2>清理前请留意</h2><ul>
+    <li>先确认需要的 ZIP 已下载，并能正常打开。</li>
+    <li>先暂停任务、等待收尾，再关闭网盘目录/视频页和 ZIP 打包页，保留本页即可。</li>
+    <li>只删除所选任务目录里的浏览器文字缓存；其他任务目录的缓存会保留。</li>
+    <li><strong>已经下载的 ZIP、MD 和网盘视频不会删除。</strong>本地缓存无法撤销清理，需要重新打包时可回到目录面板“重试失败”重新提取。</li>
+  </ul></aside>
+  <footer id="version"></footer>
+</main>
+<dialog id="confirmDialog" aria-labelledby="confirmTitle">
+  <h2 id="confirmTitle">确认清理这部分缓存？</h2>
+  <p id="confirmScope" class="selection"></p><p id="confirmSize"></p>
+  <p>会移除浏览器里对应的文字缓存，并将对应任务标为可重试。<strong>已经下载的 ZIP、MD 不受影响。</strong></p>
+  <p>此操作无法撤销；请确认已经保存需要的导出文件。</p>
+  <div class="actions"><button id="cancel" autofocus>保留缓存</button><button id="confirm" class="danger">确认清理缓存</button></div>
+</dialog>
+</body></html>

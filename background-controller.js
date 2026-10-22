@@ -69,12 +69,15 @@
     return bridge.snapshot(true);
   }
   function createController(chrome, { archiveStore, fetchImpl=globalThis.fetch } = {}) {
+    const cacheTools=typeof module==='object'&&module.exports?require('./cache-management.js'):globalThis.PDCacheManagement;
+    const cacheManager=archiveStore?.metadata?cacheTools.createManager(chrome,archiveStore):null;
     let tail = Promise.resolve();
     function serial(fn) {
       const result = tail.then(async () => {
         const stored = await chrome.storage.session.get(STORE);
         const state = stored[STORE] || { jobs: {}, downloads: {}, owners: {} };
         state.owners ||= {};
+        if(cacheManager)await cacheManager.recover(state);
         const value = await fn(state);
         await chrome.storage.session.set({ [STORE]: state });
         return value;
@@ -157,6 +160,10 @@
         documentLink = result.dlink;
       }
       return serial(async state => {
+        if(['cacheSummary','cachePreview','cacheClear'].includes(message.action)){
+          if(!cacheManager)throw Error('缓存管理不可用，请重新加载扩展');
+          return cacheManager.handle(message,sender,state);
+        }
         const directory = isPage(sender.tab?.url, '/disk/main');
         switch (message.action) {
           case 'openVideoTab': {
